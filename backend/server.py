@@ -6,6 +6,17 @@ from urllib.parse import urlparse, parse_qs
 
 PORT = 3001
 DB_FILE = 'wishes.json'
+# Resolve DB path robustly: if wishes.json is accidentally mounted as a directory,
+# store the actual file inside that directory.
+DB_PATH = DB_FILE
+if os.path.isdir(DB_PATH):
+    DB_PATH = os.path.join(DB_PATH, 'wishes.json')
+if not os.path.exists(DB_PATH):
+    try:
+        with open(DB_PATH, 'w', encoding='utf-8') as f:
+            json.dump([], f, ensure_ascii=False)
+    except Exception as _:
+        pass
 
 class WishHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -17,8 +28,8 @@ class WishHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             
             wishes = []
-            if os.path.exists(DB_FILE):
-                with open(DB_FILE, 'r', encoding='utf-8') as f:
+            if os.path.exists(DB_PATH) and not os.path.isdir(DB_PATH):
+                with open(DB_PATH, 'r', encoding='utf-8') as f:
                     try:
                         wishes = json.load(f)
                     except:
@@ -40,8 +51,8 @@ class WishHandler(http.server.SimpleHTTPRequestHandler):
                 
                 if new_wish:
                     wishes = []
-                    if os.path.exists(DB_FILE):
-                        with open(DB_FILE, 'r', encoding='utf-8') as f:
+                    if os.path.exists(DB_PATH) and not os.path.isdir(DB_PATH):
+                        with open(DB_PATH, 'r', encoding='utf-8') as f:
                             try:
                                 wishes = json.load(f)
                             except:
@@ -50,7 +61,7 @@ class WishHandler(http.server.SimpleHTTPRequestHandler):
                     # Add new wish to top
                     wishes.insert(0, new_wish)
                     
-                    with open(DB_FILE, 'w', encoding='utf-8') as f:
+                    with open(DB_PATH, 'w', encoding='utf-8') as f:
                         json.dump(wishes, f, ensure_ascii=False)
                     
                     self.send_response(200)

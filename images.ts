@@ -29,7 +29,19 @@ export const PAGE_IMAGES: Record<number, string> = {
   26: "image/2c57262dd328aab318e063de362c9aff.jpg",
   27: "image/5b4ba2faac298e09fd03aa00970bb83d.jpg",
   28: "image/62cca717038b2271e2c7083f0cb9bde4.jpg",
+  29: "image/film_20.jpg",
+  30: "image/film_21.jpg",
+  31: "image/film_22.jpg",
+  32: "image/film_23.jpg",
+  33: "image/film_24.jpg",
+  34: "image/film_25.jpg",
+  35: "image/film_26.jpg",
+  36: "image/film_27.jpg",
+  37: "image/film_28.jpg",
+  38: "image/film_29.jpg",
+  39: "image/film_30.jpg",
 };
+
 
 // 胶片图片配置 (Page 24)
 export const FILM_IMAGES: string[] = [

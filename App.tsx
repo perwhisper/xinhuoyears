@@ -13,26 +13,31 @@ import { PAGE_IMAGES, FILM_IMAGES } from './images';
 import { Heart, Trophy, MapPin, Share2, Calendar, Award, Sparkles, Tent, Image as ImageIcon } from 'lucide-react';
 
 // 通用国潮图片占位组件 - 优化：增加默认宽度感，调整阴影使大图更深邃
-const PhotoLayer: React.FC<{ pageId: number; className?: string; isLarge?: boolean }> = ({ pageId, className = "", isLarge = false }) => (
+const PhotoLayer: React.FC<{ pageId?: number; src?: string; className?: string; isLarge?: boolean }> = ({ pageId, src, className = "", isLarge = false }) => {
+  const imageSrc = src || (pageId ? PAGE_IMAGES[pageId] : "") || `https://picsum.photos/seed/xinhuo_page_${pageId}/1000/625`;
+  
+  return (
   <motion.div
     variants={{
-      hidden: { opacity: 0, scale: 0.8, filter: 'blur(10px)' },
-      show: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 2.4, ease: "easeOut", delay: 0.1 } }
+      hidden: { opacity: 0, scale: 0.95, filter: 'blur(5px)' },
+      show: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 0.5, ease: "easeOut" } }
     }}
     className={`relative group ${className}`}
   >
     {/* Removed glowing background for cleaner transparent look */}
     <div className="relative rounded-[2rem] overflow-hidden bg-transparent aspect-[16/10]">
       <img 
-        src={PAGE_IMAGES[pageId] || `https://picsum.photos/seed/xinhuo_page_${pageId}/1000/625`} 
+        src={imageSrc} 
         className="w-full h-full object-contain transition-transform duration-1000 group-hover:scale-105 drop-shadow-lg" 
-        alt={`Page ${pageId}`}
-        onLoad={() => window.dispatchEvent(new CustomEvent('image-loaded', { detail: pageId }))}
+        alt={`Page ${pageId || 'custom'}`}
+        loading="eager"
+        onLoad={() => pageId && window.dispatchEvent(new CustomEvent('image-loaded', { detail: pageId }))}
       />
       {/* Removed overlay gradient and text for cleaner transparent look */}
     </div>
   </motion.div>
 );
+};
 
 const FloatingDust: React.FC<{ color?: string }> = ({ color = COLORS.yellow }) => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -58,7 +63,7 @@ const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
-  const TOTAL_PAGES = 26;
+  const TOTAL_PAGES = 30;
 
   // Listen for image load events
   useEffect(() => {
@@ -75,11 +80,13 @@ const App: React.FC = () => {
 
   // Preload next image
   useEffect(() => {
-    if (currentPage < TOTAL_PAGES - 1) {
-      const nextId = currentPage + 2; // currentPage 0 -> Page 1. Next is Page 2.
+    // Preload current, next and previous images
+    const imagesToPreload = [currentPage, currentPage + 1, currentPage + 2, currentPage - 1].filter(p => p >= 0 && p < TOTAL_PAGES);
+    
+    imagesToPreload.forEach(id => {
       const img = new Image();
-      img.src = PAGE_IMAGES[nextId] || `https://picsum.photos/seed/xinhuo_page_${nextId}/1000/625`;
-    }
+      img.src = PAGE_IMAGES[id] || `https://picsum.photos/seed/xinhuo_page_${id}/1000/625`;
+    });
   }, [currentPage]);
 
   useEffect(() => {
@@ -93,20 +100,13 @@ const App: React.FC = () => {
   const handleScroll = React.useCallback((direction: number) => {
     if (isAnimating || loading) return;
 
-    // Check if current page image is loaded before allowing Next
-    // Exception: Page 24 (Index 23) "Time Film" has no single large image, so we skip the check.
-    if (direction > 0 && currentPage !== 23 && !loadedImages.has(currentPage + 1)) {
-       console.log(`Page ${currentPage + 1} not loaded yet`);
-       return; 
-    }
-
     const nextPage = currentPage + direction;
     if (nextPage < 0 || nextPage >= TOTAL_PAGES) return;
 
     setIsAnimating(true);
     setCurrentPage(nextPage);
     setTimeout(() => setIsAnimating(false), 1200);
-  }, [currentPage, isAnimating, loading, loadedImages]);
+  }, [currentPage, isAnimating, loading]);
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
@@ -119,11 +119,19 @@ const App: React.FC = () => {
     return () => window.removeEventListener('wheel', onWheel);
   }, [handleScroll]);
 
-  const touchStartY = React.useRef(0);
+  const touchStart = React.useRef({ x: 0, y: 0 });
   useEffect(() => {
-    const onTouchStart = (e: TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
+    const onTouchStart = (e: TouchEvent) => { 
+      touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; 
+    };
     const onTouchEnd = (e: TouchEvent) => {
-      const dy = e.changedTouches[0].clientY - touchStartY.current;
+      const dy = e.changedTouches[0].clientY - touchStart.current.y;
+      const dx = e.changedTouches[0].clientX - touchStart.current.x;
+      
+      // If horizontal scroll is dominant, don't change page
+      // This allows horizontal scrolling components (like Time Film) to work
+      if (Math.abs(dx) > Math.abs(dy)) return;
+
       if (Math.abs(dy) > 50) handleScroll(dy > 0 ? -1 : 1);
     };
     window.addEventListener('touchstart', onTouchStart);
@@ -133,6 +141,36 @@ const App: React.FC = () => {
       window.removeEventListener('touchend', onTouchEnd);
     };
   }, [handleScroll]);
+
+  // Global Preload: Start loading all images after initial render
+  useEffect(() => {
+    const allImages = [
+      ...Object.values(PAGE_IMAGES),
+      ...FILM_IMAGES
+    ];
+    
+    // Shuffle slightly or just load sequentially? Sequential is fine.
+    // Use requestIdleCallback if available, or setTimeout
+    const loadImages = async () => {
+      for (const src of allImages) {
+        await new Promise<void>((resolve) => {
+          const img = new Image();
+          img.src = src;
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          // Don't wait too long
+          setTimeout(resolve, 100); 
+        });
+      }
+    };
+
+    // Start low-priority loading after a short delay
+    const timer = setTimeout(() => {
+      loadImages();
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   if (loading) return <LoadingScreen progress={progress} />;
 
@@ -374,8 +412,8 @@ const App: React.FC = () => {
         <Slide bg="bg-[#EFE6DA]" glowColor={COLORS.green}>
           <div className="text-[12rem] font-brush absolute top-20 right-10 text-[#C41E3A]/5">春</div>
           <div className="grid grid-cols-2 gap-3 w-full px-4 mb-6">
-            <PhotoLayer pageId={20} className="w-full" />
-            <PhotoLayer pageId={20} className="w-full mt-8" />
+            <PhotoLayer src={PAGE_IMAGES[20]} className="w-full" />
+            <PhotoLayer src={PAGE_IMAGES[21]} className="w-full mt-8" />
           </div>
           <BigText color="text-green-700" className="text-4xl font-brush">春季：</BigText>
           <BigText className="text-2xl mt-6 text-[#B03031]">南山团建，球场挥洒汗水</BigText>
@@ -385,8 +423,8 @@ const App: React.FC = () => {
         <Slide bg="bg-[#EFE6DA]">
           <div className="text-[12rem] font-brush absolute top-20 right-10 text-[#B03031]/5">夏</div>
           <div className="grid grid-cols-2 gap-3 w-full px-4 mb-6">
-            <PhotoLayer pageId={21} className="w-full" />
-            <PhotoLayer pageId={21} className="w-full mt-8" />
+            <PhotoLayer src={PAGE_IMAGES[22]} className="w-full" />
+            <PhotoLayer src={PAGE_IMAGES[23]} className="w-full mt-8" />
           </div>
           <BigText color="text-[#B03031]" className="text-4xl font-brush">夏季：</BigText>
           <BigText color="text-[#B03031]" className="text-2xl mt-6">老成员毕业，共度端午</BigText>
@@ -396,8 +434,8 @@ const App: React.FC = () => {
         <Slide bg="bg-[#EFE6DA]" glowColor={COLORS.yellow}>
           <div className="text-[12rem] font-brush absolute top-20 right-10 text-[#FBC84B]/5">秋</div>
           <div className="grid grid-cols-2 gap-3 w-full px-4 mb-6">
-            <PhotoLayer pageId={22} className="w-full" />
-            <PhotoLayer pageId={22} className="w-full mt-8" />
+            <PhotoLayer src={PAGE_IMAGES[24]} className="w-full" />
+            <PhotoLayer src={PAGE_IMAGES[25]} className="w-full mt-8" />
           </div>
           <BigText color="text-[#D4AF37]" className="text-4xl font-brush">秋季：</BigText>
           <BigText className="text-2xl mt-6 text-[#B03031]">招新面试，新鲜血液注入</BigText>
@@ -407,8 +445,8 @@ const App: React.FC = () => {
         <Slide bg="bg-[#EFE6DA]" glowColor={COLORS.blue}>
           <div className="text-[12rem] font-brush absolute top-20 right-10 text-[#3C4EB2]/5">冬</div>
           <div className="grid grid-cols-2 gap-3 w-full px-4 mb-6">
-            <PhotoLayer pageId={23} className="w-full" />
-            <PhotoLayer pageId={23} className="w-full mt-8" />
+            <PhotoLayer src={PAGE_IMAGES[26]} className="w-full" />
+            <PhotoLayer src={PAGE_IMAGES[27]} className="w-full mt-8" />
           </div>
           <BigText color="text-[#3C4EB2]" className="text-4xl font-brush">冬季：</BigText>
           <BigText className="text-2xl mt-6 text-[#B03031]">团拜会，大家欢聚一堂</BigText>
@@ -417,14 +455,17 @@ const App: React.FC = () => {
         {/* 24. 时间胶片 - 调大胶片宽度 */}
         <Slide bg="bg-[#EFE6DA]">
            <BigText color="text-[#B03031]" className="text-4xl font-brush mb-10">时间胶片</BigText>
-           <motion.div animate={{ x: [0, -800, 0] }} transition={{ duration: 35, repeat: Infinity, ease: "linear" }} className="flex space-x-8 py-4">
+           <div 
+             className="flex space-x-8 py-4 overflow-x-auto w-full px-4 no-scrollbar touch-pan-x"
+             style={{ WebkitOverflowScrolling: 'touch' }}
+           >
             {FILM_IMAGES.map((imgUrl, i) => (
               <div key={i} className="w-64 h-80 bg-white p-4 rounded-sm shadow-2xl shrink-0 -rotate-2 transform-gpu border-b-8 border-gray-100">
                 <img src={imgUrl} className="w-full h-64 object-cover" alt={`Film ${i + 1}`} />
                 <div className="mt-4 text-[7px] font-mono text-gray-400">2025_MEM_ARCHIVE_{i + 1}</div>
               </div>
             ))}
-          </motion.div>
+          </div>
           <ScrollGuide light={false} />
         </Slide>
 

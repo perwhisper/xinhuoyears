@@ -22,7 +22,7 @@ export const LoadingScreen: React.FC<{ progress: number }> = ({ progress }) => {
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         className="w-32 h-32 mb-14 rounded-[2.5rem] bg-white flex items-center justify-center shadow-2xl relative z-10"
       >
-        <span className="text-[#B03031] text-4xl font-brush">薪火</span>
+        <img src="/vite.svg" alt="logo" className="w-12 h-12" />
       </motion.div>
 
       <div className="text-center relative z-10 px-6">

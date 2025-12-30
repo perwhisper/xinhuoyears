@@ -18,13 +18,13 @@ export const REPORT_DATA: ReportData = {
   totalParticipants: 1600,
   avgParticipants: 20,
   partnerRankings: [
-    { rank: 1, name: "静水系列 (静水社工/工社/社区)", count: 31 },
+    { rank: 1, name: "静水社工", count: 31 },
     { rank: 2, name: "南山街道社区卫生服务中心", count: 30 },
-    { rank: 3, name: "长生桥系列 (长生桥社区/社工站)", count: 16 },
+    { rank: 3, name: "长生桥社工站", count: 16 },
     { rank: 4, name: "久久公益", count: 8 },
     { rank: 5, name: "南岸区绿荫社会工作服务中心", count: 5 },
     { rank: 6, name: "桂花园社区 (含居委会)", count: 4 },
-    { rank: 7, name: "青影红十字志愿服务队/医院", count: 4 },
+    { rank: 7, name: "青影红十字志愿服务队", count: 4 },
     { rank: 8, name: "南坪街道金紫街社区", count: 3 },
     { rank: 9, name: "重庆市体育局", count: 2 },
     { rank: 10, name: "渝中区团委", count: 2 }

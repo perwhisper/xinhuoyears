@@ -82,11 +82,33 @@ export const BlessingWallModule: React.FC<{ title?: string }> = ({ title = "å†™ä
   const [blessings, setBlessings] = useState<string[]>(DEFAULT_BLESSINGS);
   const [isFocused, setIsFocused] = useState(false);
 
+  // Fetch blessings from backend
+  useEffect(() => {
+    fetch('/api/wishes')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setBlessings(prev => [...data, ...prev]);
+        }
+      })
+      .catch(err => console.log("Backend not available, using local storage"));
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!comment.trim()) return;
-    setBlessings(prev => [comment.trim(), ...prev]);
+    
+    const newWish = comment.trim();
+    setBlessings(prev => [newWish, ...prev]);
     setSubmitted(true);
+    
+    // Post to backend
+    fetch('/api/wishes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: newWish })
+    }).catch(err => console.log("Failed to save to backend"));
+
     setTimeout(() => setSubmitted(false), 3000);
     setComment("");
   };

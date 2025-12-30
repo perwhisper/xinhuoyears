@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local Data & Media Sources
+backend/wishes.json
+*.m4a
+*.mp4
+convert_bgm.py

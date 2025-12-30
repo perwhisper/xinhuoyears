@@ -27,6 +27,7 @@ const PhotoLayer: React.FC<{ pageId: number; className?: string; isLarge?: boole
         src={PAGE_IMAGES[pageId] || `https://picsum.photos/seed/xinhuo_page_${pageId}/1000/625`} 
         className="w-full h-full object-contain transition-transform duration-1000 group-hover:scale-105 drop-shadow-lg" 
         alt={`Page ${pageId}`}
+        onLoad={() => window.dispatchEvent(new CustomEvent('image-loaded', { detail: pageId }))}
       />
       {/* Removed overlay gradient and text for cleaner transparent look */}
     </div>
@@ -54,14 +55,84 @@ const FloatingDust: React.FC<{ color?: string }> = ({ color = COLORS.yellow }) =
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
+  const TOTAL_PAGES = 26;
+
+  // Listen for image load events
+  useEffect(() => {
+    const handleImageLoad = (e: any) => {
+      setLoadedImages(prev => {
+        const newSet = new Set(prev);
+        newSet.add(e.detail);
+        return newSet;
+      });
+    };
+    window.addEventListener('image-loaded', handleImageLoad);
+    return () => window.removeEventListener('image-loaded', handleImageLoad);
+  }, []);
+
+  // Preload next image
+  useEffect(() => {
+    if (currentPage < TOTAL_PAGES - 1) {
+      const nextId = currentPage + 2; // currentPage 0 -> Page 1. Next is Page 2.
+      const img = new Image();
+      img.src = PAGE_IMAGES[nextId] || `https://picsum.photos/seed/xinhuo_page_${nextId}/1000/625`;
+    }
+  }, [currentPage]);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setProgress(p => (p >= 100 ? 100 : p + 5));
+      setProgress(p => (p >= 100 ? 100 : p + 2)); // Slower: +2 every 50ms = 2.5s total (approx)
       if (progress >= 100) setLoading(false);
-    }, 40);
+    }, 50);
     return () => clearInterval(timer);
   }, [progress]);
+
+  const handleScroll = React.useCallback((direction: number) => {
+    if (isAnimating || loading) return;
+
+    // Check if current page image is loaded before allowing Next
+    // Exception: Page 24 (Index 23) "Time Film" has no single large image, so we skip the check.
+    if (direction > 0 && currentPage !== 23 && !loadedImages.has(currentPage + 1)) {
+       console.log(`Page ${currentPage + 1} not loaded yet`);
+       return; 
+    }
+
+    const nextPage = currentPage + direction;
+    if (nextPage < 0 || nextPage >= TOTAL_PAGES) return;
+
+    setIsAnimating(true);
+    setCurrentPage(nextPage);
+    setTimeout(() => setIsAnimating(false), 1200);
+  }, [currentPage, isAnimating, loading, loadedImages]);
+
+  useEffect(() => {
+    const onWheel = (e: WheelEvent) => {
+      // Threshold to avoid sensitive trackpads
+      if (Math.abs(e.deltaY) > 30) {
+        handleScroll(e.deltaY > 0 ? 1 : -1);
+      }
+    };
+    window.addEventListener('wheel', onWheel);
+    return () => window.removeEventListener('wheel', onWheel);
+  }, [handleScroll]);
+
+  const touchStartY = React.useRef(0);
+  useEffect(() => {
+    const onTouchStart = (e: TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
+    const onTouchEnd = (e: TouchEvent) => {
+      const dy = e.changedTouches[0].clientY - touchStartY.current;
+      if (Math.abs(dy) > 50) handleScroll(dy > 0 ? -1 : 1);
+    };
+    window.addEventListener('touchstart', onTouchStart);
+    window.addEventListener('touchend', onTouchEnd);
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [handleScroll]);
 
   if (loading) return <LoadingScreen progress={progress} />;
 
@@ -70,7 +141,10 @@ const App: React.FC = () => {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[#EFE6DA]">
       <BGMPlayer />
-      <div className="snap-container no-scrollbar h-full w-full overflow-y-auto overflow-x-hidden">
+      <div 
+        className="h-full w-full transition-transform duration-1000 ease-[cubic-bezier(0.25,0.1,0.25,1.0)]"
+        style={{ transform: `translateY(-${currentPage * 100}%)` }}
+      >
         
         {/* 1. 封面页 - 调大封面图 w-64 -> w-84 */}
         <Slide bg="bg-[#EFE6DA]" className="text-[#B03031]" glowColor={COLORS.yellow}>

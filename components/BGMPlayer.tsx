@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Music, Music2 } from 'lucide-react';
+import { Music } from 'lucide-react';
 import { BGM_URL } from '../constants';
 
 export const BGMPlayer: React.FC = () => {
@@ -14,17 +14,18 @@ export const BGMPlayer: React.FC = () => {
 
     const handleInteraction = () => {
       if (audioRef.current && !isPlaying) {
-        audioRef.current.play().then(() => setIsPlaying(true));
+        audioRef.current.play().then(() => setIsPlaying(true)).catch(e => console.log("Autoplay blocked", e));
       }
+      document.removeEventListener('click', handleInteraction);
       document.removeEventListener('touchstart', handleInteraction);
     };
 
+    document.addEventListener('click', handleInteraction, { once: true });
     document.addEventListener('touchstart', handleInteraction, { once: true });
 
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
-        audioRef.current = null;
       }
     };
   }, []);

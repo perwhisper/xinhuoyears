@@ -107,4 +107,4 @@ export const HIGHLIGHT_IMAGES = [
   "https://picsum.photos/seed/h5/800/600"
 ];
 
-export const BGM_URL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3";
+export const BGM_URL = "/bgm.mp3";

@@ -1,13 +1,23 @@
 version: '3'
 
 services:
-  web:
+  frontend:
     build: .
     ports:
       - "80:80"
       - "443:443"
     restart: always
-    container_name: xinhuo_report
+    container_name: xinhuo_report_frontend
     volumes:
-      # 将服务器上的证书目录映射到容器内
       - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    restart: always
+    container_name: xinhuo_report_backend
+    volumes:
+      - ./backend/wishes.json:/app/wishes.json

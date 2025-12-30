@@ -20,9 +20,9 @@ export const LoadingScreen: React.FC<{ progress: number }> = ({ progress }) => {
           boxShadow: ["0 0 20px rgba(251,200,75,0.2)", "0 0 50px rgba(251,200,75,0.5)", "0 0 20px rgba(251,200,75,0.2)"]
         }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        className="w-32 h-32 mb-14 rounded-[2.5rem] bg-white flex items-center justify-center shadow-2xl relative z-10"
+        className="w-32 h-32 mb-14 rounded-[2.5rem] bg-white flex items-center justify-center shadow-2xl relative z-10 overflow-hidden"
       >
-        <img src="/vite.svg" alt="logo" className="w-12 h-12" />
+        <img src="/vite.svg" alt="logo" className="w-full h-full object-cover" />
       </motion.div>
 
       <div className="text-center relative z-10 px-6">

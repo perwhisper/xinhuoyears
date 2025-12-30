@@ -180,7 +180,7 @@ export const BlessingWallModule: React.FC<{ title?: string }> = ({ title = "å†™ä
           </form>
 
           <div className="flex-1 overflow-hidden relative z-10">
-            <motion.div animate={{ y: ["0%", "-50%"] }} transition={{ duration: 60, repeat: Infinity, ease: "linear" }} className="space-y-3.5 pt-4">
+            <motion.div animate={{ y: ["0%", "-50%"] }} transition={{ duration: 15, repeat: Infinity, ease: "linear" }} className="space-y-3.5 pt-4">
               {[...blessings, ...blessings].map((b, i) => (
                 <div key={i} className="p-4 rounded-2xl bg-white/40 border border-[#B03031]/5 backdrop-blur-md flex items-start space-x-3 shadow-sm">
                   <Sparkles className="w-2.5 h-2.5 text-[#B03031]/40 mt-1" />

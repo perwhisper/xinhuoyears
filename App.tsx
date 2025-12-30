@@ -229,7 +229,7 @@ const App: React.FC = () => {
         {/* 8. 活动类型 (饼图) - w-48 -> w-64 */}
         <Slide bg="bg-[#EFE6DA]">
           <BigText className="text-3xl gold-gradient-text mb-8 font-brush">我们的活动类型</BigText>
-          <div className="h-56 w-full relative mb-8">
+          <div className="h-56 w-full relative mb-8" style={{ minHeight: '224px', minWidth: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={REPORT_DATA.activityTypes} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} cornerRadius={8} dataKey="value">
@@ -427,7 +427,7 @@ const App: React.FC = () => {
         <Slide bg="bg-[#EFE6DA]">
            <PhotoLayer pageId={26} className="w-full px-4 mb-10" />
            <BigText color="text-[#B03031]" className="text-3xl">这年累计收到捐款</BigText>
-           <div className="text-[10rem] font-serif-bold gold-gradient-text italic leading-none my-4">
+           <div className="text-[8rem] font-serif-bold gold-gradient-text italic leading-none my-4">
              <NumberTicker value={8500} />
            </div>
            <BigText color="text-[#B03031]" className="text-2xl">RMB</BigText>
@@ -463,7 +463,7 @@ const App: React.FC = () => {
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-20" />
           <div className="flex flex-col items-center justify-center relative h-64 w-full">
              <motion.div animate={{ opacity: [1, 0], scale: [1, 2.5] }} transition={{ delay: 1, duration: 1.5 }} className="text-[12rem] font-serif-bold gold-gradient-text absolute">2025</motion.div>
-             <motion.div initial={{ opacity: 0, scale: 0.2 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 2.5, duration: 1.5 }} className="text-[12rem] font-serif-bold text-[#B03031] absolute">2026</motion.div>
+             <motion.div initial={{ opacity: 0, scale: 0.2 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 2.5, duration: 1.5 }} className="text-[8rem] font-serif-bold text-[#B03031] absolute">2026</motion.div>
           </div>
           <BigText color="text-[#B03031]" className="mt-24 text-2xl">2025 年即将到站，</BigText>
           <BigText color="#FBC84B" className="text-4xl font-brush drop-shadow-sm">2026 年更精彩</BigText>

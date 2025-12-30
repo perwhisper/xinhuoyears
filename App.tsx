@@ -449,7 +449,7 @@ const App: React.FC = () => {
             <PhotoLayer src={PAGE_IMAGES[27]} className="w-full mt-8" />
           </div>
           <BigText color="text-[#3C4EB2]" className="text-4xl font-brush">冬季：</BigText>
-          <BigText className="text-2xl mt-6 text-[#B03031]">团拜会，大家欢聚一堂</BigText>
+          <BigText className="text-2xl mt-6 text-[#B03031]">工作室手工，老成员考研</BigText>
         </Slide>
 
         {/* 24. 时间胶片 - 调大胶片宽度 */}

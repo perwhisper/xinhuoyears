@@ -1,31 +1,17 @@
-# Stage 1: Build the React application
-FROM node:20-alpine as build
+# 纯静态部署模式
+# 这种模式下，我们假设你已经在本地执行了 `npm run build`
+# 并且生成的 `dist` 文件夹已经位于当前目录
 
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npm run build
-
-# Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Copy built assets from Stage 1
-COPY --from=build /app/dist /usr/share/nginx/html
+# 复制本地构建好的 dist 目录到 Nginx 容器
+COPY dist /usr/share/nginx/html
 
-# Copy custom Nginx configuration
+# 复制 Nginx 配置文件
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80
+# 暴露端口
 EXPOSE 80
 
-# Start Nginx
+# 启动 Nginx
 CMD ["nginx", "-g", "daemon off;"]

@@ -26,7 +26,7 @@ export const PAGE_IMAGES: Record<number, string> = {
   23: "image/652c476ee7f2940226c35b5806f34779.jpg",
   24: "image/ecb09af43df609482ba0ceb589da1759.jpg", // Note: Page 24 also has film strip images
   25: "image/e044fe541beb4d7be854b3e2ba3707df.jpg",
-  26: "image/2c57262dd328aab318e063de362c9aff.jpg",
+  26: "image/4341cbdcfe9dbe15517bbfe84abc64cc.jpg",
   27: "image/5b4ba2faac298e09fd03aa00970bb83d.jpg",
   28: "image/62cca717038b2271e2c7083f0cb9bde4.jpg",
   29: "image/film_20.jpg",

@@ -99,7 +99,7 @@ export const BlessingWallModule: React.FC<{ title?: string }> = ({ title = "å†™ä
     if (!comment.trim()) return;
     
     const newWish = comment.trim();
-    setBlessings(prev => [newWish, ...prev]);
+    setBlessings(prev => [...prev, newWish]);
     setSubmitted(true);
     
     // Post to backend

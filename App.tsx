@@ -463,7 +463,7 @@ const App: React.FC = () => {
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-20" />
           <div className="flex flex-col items-center justify-center relative h-64 w-full">
              <motion.div animate={{ opacity: [1, 0], scale: [1, 2.5] }} transition={{ delay: 1, duration: 1.5 }} className="text-[12rem] font-serif-bold gold-gradient-text absolute">2025</motion.div>
-             <motion.div initial={{ opacity: 0, scale: 0.2 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 2.5, duration: 1.5 }} className="text-[15rem] font-serif-bold text-[#B03031] absolute">2026</motion.div>
+             <motion.div initial={{ opacity: 0, scale: 0.2 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 2.5, duration: 1.5 }} className="text-[12rem] font-serif-bold text-[#B03031] absolute">2026</motion.div>
           </div>
           <BigText color="text-[#B03031]" className="mt-24 text-2xl">2025 年即将到站，</BigText>
           <BigText color="#FBC84B" className="text-4xl font-brush drop-shadow-sm">2026 年更精彩</BigText>

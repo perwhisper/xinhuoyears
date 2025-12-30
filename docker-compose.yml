@@ -5,5 +5,9 @@ services:
     build: .
     ports:
       - "80:80"
+      - "443:443"
     restart: always
     container_name: xinhuo_report
+    volumes:
+      # 将服务器上的证书目录映射到容器内
+      - /etc/letsencrypt:/etc/letsencrypt:ro

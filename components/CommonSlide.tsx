@@ -17,7 +17,7 @@ export const itemVariants: Variants = {
     y: 0, 
     filter: 'blur(0px)', 
     scale: 1,
-    transition: { duration: 1.2, ease: [0.22, 1, 0.36, 1] } 
+    transition: { duration: 2.4, ease: [0.22, 1, 0.36, 1] } 
   }
 };
 

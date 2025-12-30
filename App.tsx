@@ -17,7 +17,7 @@ const PhotoLayer: React.FC<{ pageId: number; className?: string; isLarge?: boole
   <motion.div
     variants={{
       hidden: { opacity: 0, scale: 0.8, filter: 'blur(10px)' },
-      show: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 1.2, ease: "easeOut", delay: 0.1 } }
+      show: { opacity: 1, scale: 1, filter: 'blur(0px)', transition: { duration: 2.4, ease: "easeOut", delay: 0.1 } }
     }}
     className={`relative group ${className}`}
   >
@@ -84,7 +84,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setProgress(p => (p >= 100 ? 100 : p + 2)); // Slower: +2 every 50ms = 2.5s total (approx)
+      setProgress(p => (p >= 100 ? 100 : p + 1)); // Slower: +1 every 50ms = 5s total
       if (progress >= 100) setLoading(false);
     }, 50);
     return () => clearInterval(timer);
@@ -373,7 +373,10 @@ const App: React.FC = () => {
         {/* 20. 春季 - px-10 -> px-4 */}
         <Slide bg="bg-[#EFE6DA]" glowColor={COLORS.green}>
           <div className="text-[12rem] font-brush absolute top-20 right-10 text-[#C41E3A]/5">春</div>
-          <PhotoLayer pageId={20} className="w-full px-4 mb-10" />
+          <div className="grid grid-cols-2 gap-3 w-full px-4 mb-6">
+            <PhotoLayer pageId={20} className="w-full" />
+            <PhotoLayer pageId={20} className="w-full mt-8" />
+          </div>
           <BigText color="text-green-700" className="text-4xl font-brush">春季：</BigText>
           <BigText className="text-2xl mt-6 text-[#B03031]">南山团建，球场挥洒汗水</BigText>
         </Slide>
@@ -381,25 +384,34 @@ const App: React.FC = () => {
         {/* 21. 夏季 - px-10 -> px-4 */}
         <Slide bg="bg-[#EFE6DA]">
           <div className="text-[12rem] font-brush absolute top-20 right-10 text-[#B03031]/5">夏</div>
-          <PhotoLayer pageId={21} className="w-full px-4 mb-10" />
+          <div className="grid grid-cols-2 gap-3 w-full px-4 mb-6">
+            <PhotoLayer pageId={21} className="w-full" />
+            <PhotoLayer pageId={21} className="w-full mt-8" />
+          </div>
           <BigText color="text-[#B03031]" className="text-4xl font-brush">夏季：</BigText>
           <BigText color="text-[#B03031]" className="text-2xl mt-6">老成员毕业，共度端午</BigText>
         </Slide>
 
         {/* 22. 秋季 - px-10 -> px-4 */}
-        <Slide bg="bg-[#EFE6DA]">
-          <div className="text-[12rem] font-brush absolute top-20 right-10 text-[#B03031]/5">秋</div>
-          <PhotoLayer pageId={22} className="w-full px-4 mb-10" />
-          <BigText color="text-[#B03031]" className="text-4xl font-brush">秋季：</BigText>
-          <BigText color="text-[#B03031]" className="text-2xl mt-6">宣传招新，注入新活力</BigText>
+        <Slide bg="bg-[#EFE6DA]" glowColor={COLORS.yellow}>
+          <div className="text-[12rem] font-brush absolute top-20 right-10 text-[#FBC84B]/5">秋</div>
+          <div className="grid grid-cols-2 gap-3 w-full px-4 mb-6">
+            <PhotoLayer pageId={22} className="w-full" />
+            <PhotoLayer pageId={22} className="w-full mt-8" />
+          </div>
+          <BigText color="text-[#D4AF37]" className="text-4xl font-brush">秋季：</BigText>
+          <BigText className="text-2xl mt-6 text-[#B03031]">招新面试，新鲜血液注入</BigText>
         </Slide>
 
         {/* 23. 冬季 - px-10 -> px-4 */}
-        <Slide bg="bg-[#EFE6DA]">
-          <div className="text-[12rem] font-brush absolute top-20 right-10 text-[#B03031]/5">冬</div>
-          <PhotoLayer pageId={23} className="w-full px-4 mb-10" />
-          <BigText color="text-[#B03031]" className="text-4xl font-brush">冬季：</BigText>
-          <BigText color="text-[#B03031]" className="text-2xl mt-6">老成员考研</BigText>
+        <Slide bg="bg-[#EFE6DA]" glowColor={COLORS.blue}>
+          <div className="text-[12rem] font-brush absolute top-20 right-10 text-[#3C4EB2]/5">冬</div>
+          <div className="grid grid-cols-2 gap-3 w-full px-4 mb-6">
+            <PhotoLayer pageId={23} className="w-full" />
+            <PhotoLayer pageId={23} className="w-full mt-8" />
+          </div>
+          <BigText color="text-[#3C4EB2]" className="text-4xl font-brush">冬季：</BigText>
+          <BigText className="text-2xl mt-6 text-[#B03031]">团拜会，大家欢聚一堂</BigText>
         </Slide>
 
         {/* 24. 时间胶片 - 调大胶片宽度 */}
